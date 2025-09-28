@@ -1,0 +1,6 @@
+!include:NIPA_FD_Common.yaml
+year: 2019
+
+source_names:
+  BEA_NIPA: !include:NIPA_FD_Common.yaml:source_names:BEA_NIPA
+    year: 2019
