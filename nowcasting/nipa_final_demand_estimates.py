@@ -9,6 +9,7 @@ from pathlib import Path
 
 methodPath = Path(__file__).parent
 fbsMethodPath = methodPath / "flowsa_fbs"
+regenerateFBS = False
 
 #%% Generate PCE dataset
 for y in range(2017, 2024):
@@ -43,15 +44,16 @@ for y in range(2017, 2024):
               )
           )
     df['Commodity Code'] = df['Commodity Code'].astype('str')
-    pce = df.pivot_table(values='DistributedFlowAmount', index=['Commodity Code', 'Commodity Description'],
+    pce = df.pivot_table(values='DistributedFlowAmount', index='Commodity Code',
                           columns='SectorConsumedBy', aggfunc='sum',
                           margins=False) / 1000000
 
 #%% Generate the FBS for other demands (see NIPA_FD_Common.yaml)
     name=f'NIPA_FD_{y}'
-    FlowBySector.generateFlowBySector(name, append_sector_names=True,
-                                      download_sources_ok=True,
-                                      external_config_path=fbsMethodPath)
+    if regenerateFBS:
+        FlowBySector.generateFlowBySector(name, append_sector_names=True,
+                                          download_sources_ok=True,
+                                          external_config_path=fbsMethodPath)
     fbs = flowsa.getFlowBySector(name)
     
     cw = pd.read_csv('https://raw.githubusercontent.com/USEPA/useeior'
@@ -102,23 +104,78 @@ for y in range(2017, 2024):
     for spb, scb, bea in mods:
         use = use.query('~(SectorProducedBy == @spb & SectorConsumedBy == @scb & BEA != @bea)')
     
-    use_pivot = use.pivot_table(values='FlowAmount', index=['BEA', 'Com_Name'],
+    use_pivot = use.pivot_table(values='FlowAmount', index='BEA',
                                 columns='SectorConsumedBy', aggfunc='sum',
                                 margins=False) / 1000000
     
     # Consolidate into a single table
-    pce.index.name = ('BEA', 'Com_Name')
-    use_pivot.index.name = ('BEA', 'Com_Name')
-    
     all_indexes = pce.index.union(use_pivot.index)
     all_columns = pce.columns.union(use_pivot.columns)
     
     pce = pce.reindex(index=all_indexes, columns=all_columns, fill_value=0)
     use_pivot = use_pivot.reindex(index=all_indexes, columns=all_columns, fill_value=0)
     combined = pce.add(use_pivot, fill_value=0)
+    combined = combined.add_suffix('00')
+
+    U_17 = pd.read_excel('https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kinglet-22.xlsx',
+                           sheet_name='U')
+    U_17 = (U_17
+           .assign(BEA = lambda x: x['Unnamed: 0'].str[:-3])
+           .set_index('BEA')
+           .iloc[:-3]
+           )
+
+    # These are the specific PCE margins
+    transport = bridge['Unnamed: 5'].sum()
+    wholesale = bridge['Wholesale'].sum()
+    retail = bridge['Retail'].sum()
+
+    margins_df = (bridge
+               .filter(['Commodity Code', 'Unnamed: 4', 'Unnamed: 8'])
+               .rename(columns={'Unnamed: 4': 'Producer',
+                                'Unnamed: 8': 'Purchaser'})
+               .groupby('Commodity Code').agg('sum')
+               .reset_index()
+               .assign(BEA = lambda x: x['Commodity Code'].astype('str'))
+               # .assign(phi = lambda x: x['Producer'] / x['Purchaser'])
+               .set_index('BEA')
+               .reindex(U_17.index, fill_value=0)
+               )
+    household_fd = U_17['F01000/US'] # drop value added rows
+    margin_ratio = (household_fd / 1000000) / margins_df['Purchaser']
     
-    # Recalculate row totals
-    combined['Total'] = combined.sum(axis=1)
-    combined.loc['Total'] = combined.sum()
+    combined = combined.reindex(U_17.index, fill_value=0)
+    combined_pro = combined.mul(pd.Series(margin_ratio).fillna(1), axis=0)
+   
+
+    ## Margins values need to be added back to final demand for wholesale, transport, and retail sectors
+    # transport sectors are somewhat accounted for by the margin_ratio but this is
+    # not necessarily a good approach for the time series.
+    margins_total = (combined_pro['F01000'] - combined['F01000']).sum()*-1
+    margins = {}
+    margins['t'] = margins_total * (transport / (transport+wholesale+retail))
+    margins['w'] = margins_total * (wholesale / (transport+wholesale+retail))
+    margins['r'] = margins_total * (retail / (transport+wholesale+retail))
+
+    sectors= {}
+    sectors['t'] = list(combined.index[combined.index.str.startswith(('48', '49'))])
+    sectors['t'].remove('491000')
+    sectors['r'] = list(combined.index[combined.index.str.startswith(('44', '45', '4B'))])
+    sectors['w'] = list(combined.index[combined.index.str.startswith('42')])
+
+    for m in ('t', 'r', 'w'):
+        fd = combined.loc[combined.index.isin(sectors[m]), 'F01000'].sum() # SUT value
+        new_fd = fd + margins[m]
+        subset = pd.DataFrame(household_fd.loc[household_fd.index.isin(sectors[m])])
+        subset['pct'] = subset['F01000/US'] / subset['F01000/US'].sum()
+        subset['new_fd'] = new_fd * subset['pct']
+        combined_pro['F01000'].update(subset['new_fd'])
+
+    # Drop some vectors that have lower quality allocations
+    combined_pro = combined_pro.drop(['F06S00', 'F07S00', 'F10C00', 'F10S00'], axis=1)
+
+    # # Recalculate row totals
+    # combined_pro['Total'] = combined_pro.sum(axis=1)
+    # combined_pro.loc['Total'] = combined_pro.sum()
     
-    combined.to_csv(flowsa.settings.paths.local_path.parent / 'USEEIO-input' / f'final_demand_{y}.csv')
+    combined_pro.to_csv(flowsa.settings.paths.local_path.parent / 'USEEIO-input' / f'final_demand_{y}_PRO.csv')
