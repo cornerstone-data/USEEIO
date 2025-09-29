@@ -151,11 +151,6 @@ for y in range(2017, 2024):
     ## Margins values need to be added back to final demand for wholesale, transport, and retail sectors
     # transport sectors are somewhat accounted for by the margin_ratio but this is
     # not necessarily a good approach for the time series.
-    margins_total = (combined_pro['F01000'] - combined['F01000']).sum()*-1
-    margins = {}
-    margins['t'] = margins_total * (transport / (transport+wholesale+retail))
-    margins['w'] = margins_total * (wholesale / (transport+wholesale+retail))
-    margins['r'] = margins_total * (retail / (transport+wholesale+retail))
 
     sectors= {}
     sectors['t'] = list(combined.index[combined.index.str.startswith(('48', '49'))])
@@ -163,13 +158,20 @@ for y in range(2017, 2024):
     sectors['r'] = list(combined.index[combined.index.str.startswith(('44', '45', '4B'))])
     sectors['w'] = list(combined.index[combined.index.str.startswith('42')])
 
-    for m in ('t', 'r', 'w'):
-        fd = combined.loc[combined.index.isin(sectors[m]), 'F01000'].sum() # SUT value
-        new_fd = fd + margins[m]
-        subset = pd.DataFrame(household_fd.loc[household_fd.index.isin(sectors[m])])
-        subset['pct'] = subset['F01000/US'] / subset['F01000/US'].sum()
-        subset['new_fd'] = new_fd * subset['pct']
-        combined_pro['F01000'].update(subset['new_fd'])
+    for c in combined_pro.columns:
+        margins_total = (combined_pro[c] - combined[c]).sum()*-1
+        margins = {}
+        margins['t'] = margins_total * (transport / (transport+wholesale+retail))
+        margins['w'] = margins_total * (wholesale / (transport+wholesale+retail))
+        margins['r'] = margins_total * (retail / (transport+wholesale+retail))
+    
+        for m in ('t', 'r', 'w'):
+            fd = combined.loc[combined.index.isin(sectors[m]), c].sum() # SUT value
+            new_fd = fd + margins[m]
+            subset = pd.DataFrame(U_17.loc[U_17.index.isin(sectors[m]), f'{c}/US'])
+            subset['pct'] = subset[f'{c}/US'] / subset[f'{c}/US'].sum()
+            subset['new_fd'] = new_fd * subset['pct']
+            combined_pro[c].update(subset['new_fd'])
 
     # Drop some vectors that have lower quality allocations
     combined_pro = combined_pro.drop(['F06S00', 'F07S00', 'F10C00', 'F10S00'], axis=1)
