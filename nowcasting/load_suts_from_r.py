@@ -383,6 +383,7 @@ for yr in year_range_to_estimate:
     check_row_col_balance([Vi_out,Ui_out,Ufd_out,Uva_out, Umi_out])
     
     #check import balance holds
+    Um_out =pd.concat([Umi_out, Umfd_out_df], axis=1)
     m,idx,s=check_import_balance(Um_out)
     
     # checks on agg table to disagg table    
@@ -401,7 +402,6 @@ for yr in year_range_to_estimate:
     Uraw.to_csv(os.path.join(output_dir, f'U_ini_{yr}.csv'))
     Uagg.to_csv(os.path.join(output_dir, f'U_agg_{yr}.csv'))
     
-    Um_out =pd.concat([Umi_out, Umfd_out_df], axis=1)
     Um_out.to_csv(os.path.join(output_dir, f'U_imports_out_{yr}.csv'))
     Umi_ini.to_csv(os.path.join(output_dir, f'U_imports_ini_{yr}.csv'))
     
