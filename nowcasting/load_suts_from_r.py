@@ -20,15 +20,22 @@
 # -----------------------------------------------------------------------------
 
 import os
+from pathlib import Path
+import appdirs
 
+## Use the nowcasting folder as the working directory
 
 # -----------------------------------------------------------------------------
 ### USER SPECIFICATION
-# Set R_HOME environment variable
+# Set R_HOME environment variable, in R Studio use R.home()
 os.environ['R_HOME'] = 'c:/Programs/R442/'
 
 # Define root path and file names
-root_path = r'D:/GitHub/useeior/data/'
+methodPath = Path(__file__).parent # nowcasting folder
+root_path = methodPath.parents[1] / 'useeior' / 'data' # path to useeior, assumes USEEIO and useeior in same parent directory
+init_est_path = Path(appdirs.user_data_dir()) / 'USEEIO-input'
+output_dir = methodPath / 'output'
+output_dir.mkdir(exist_ok=True)
 
 # Choose whether to use specified initial estimate (alternative is to use the benchmark tables directly)
 # initial_estimate = 'exogenousdata' or initial_estimate = ''
@@ -191,7 +198,8 @@ for yr in year_range_to_estimate:
     if initial_estimate == 'exogenousdata':
         
         print("Using exogenous supplied data on com_mix and intermediate Use for initial estimate:")
-        Vi_ini=pd.read_excel('./init_estimates/com_mix.xlsx',sheet_name=str(yr)+"_Supply_BAS",index_col=0)/1e6
+        Vi_ini=pd.read_excel(init_est_path / 'com_mix.xlsx',
+                             sheet_name=f"{yr}_Supply_BAS",index_col=0)/1e6
         Vi_ini.index = Vi_ini.index.str.replace(r'/US$', '', regex=True)
         Vi_ini.columns = (Vi_ini.columns
                        .str.replace(r'^X', '', regex=True)       # remove leading X
@@ -203,7 +211,8 @@ for yr in year_range_to_estimate:
         indices = np.where(mask)
         Vi_ini[mask] = Vi_ini_BM[mask]
         
-        Ui_ini=pd.read_excel('./init_estimates/intermediate_Use.xlsx',sheet_name=str(yr)+"_Inter_U_PRO",index_col=0)/1e6
+        Ui_ini=pd.read_excel(init_est_path / 'intermediate_Use.xlsx',
+                             sheet_name=f"{yr}_Inter_U_PRO",index_col=0)/1e6
         Ui_ini.index = Ui_ini.index.str.replace(r'/US$', '', regex=True)
         Ui_ini.columns = (Ui_ini.columns
                        .str.replace(r'^X', '', regex=True)       # remove leading X
@@ -215,7 +224,7 @@ for yr in year_range_to_estimate:
         Ui_ini[mask] = Ui_ini_BM[mask]
         
         
-        Ufd_ini=pd.read_csv('./init_estimates/final_demand_'+str(yr)+'_PRO.csv',index_col=0)
+        Ufd_ini=pd.read_csv(init_est_path / f'final_demand_{yr}_PRO.csv',index_col=0)
         Ufd_ini = Ufd_ini.reindex_like(Ufd_ini_BM).combine_first(Ufd_ini_BM)
         Ufd_ini.index.name = None
         mask = (Ufd_ini == 0) & (Ufd_ini_BM != 0)
@@ -296,7 +305,8 @@ for yr in year_range_to_estimate:
     ### Checks on Data Constraints
     # right now this shows a difference between the aggregated detail ind out and that which is in the Summary Supply Table 
     [diff_in_totals,ind_out_agged,df_diff] = compare_disagg_to_agg_vec(C_ind_out, Viagg.sum(axis=0), G_iagg_cols.to_numpy())
-    df_diff.to_csv('checks/ColTotal_v_SummaryTable_Conflict_'+str(yr)+'.csv')
+    (methodPath / 'checks').mkdir(exist_ok=True)
+    df_diff.to_csv(f'checks/ColTotal_v_SummaryTable_Conflict_{yr}.csv')
     
 ### RAS BALANCING ###
 
@@ -383,10 +393,6 @@ for yr in year_range_to_estimate:
     
     
     # Write the balanced tables to CSV files
-    output_dir = './output/'
-    os.makedirs(output_dir, exist_ok=True)
-    
-    
     Vi_out.to_csv(os.path.join(output_dir, f'V_out_{yr}.csv'))
     Vi_ini.to_csv(os.path.join(output_dir, f'V_ini_{yr}.csv'))
     # Concatenate Un, Unfd, Unva into a single DataFrame and write to file
@@ -399,7 +405,6 @@ for yr in year_range_to_estimate:
     Um_out.to_csv(os.path.join(output_dir, f'U_imports_out_{yr}.csv'))
     Umi_ini.to_csv(os.path.join(output_dir, f'U_imports_ini_{yr}.csv'))
     
-
 
 
 # # 2017 check - additional checks of final table to the benchmarks
@@ -471,7 +476,3 @@ for yr in year_range_to_estimate:
         
         print("Where Ui_out is 0 but Ui_ini is nonzero:")
         print(violations_Uva.head())
-        
-        
-
-    

@@ -7,3 +7,7 @@ import_emission_factors/API/*API_key.yaml
 !import_emission_factors/output/*import_factors_exiobase_2019*
 !import_emission_factors/output/aggregate*
 !import_emission_factors/output/import_shares_2019*
+*__pycache__*
+nowcasting/checks/*
+nowcasting/output/*
+nowcasting/*.txt

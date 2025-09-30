@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 SUT - GRAS Balancing routine with customised table balances
 
 """
-
 
 
 import numpy as np
@@ -430,6 +428,5 @@ def sut_ras(V,Ui,Ufd,Uva,Umi=None,Umfd=None,ColTot=None,RowTot=None,Vagg=None,Ua
         print(f"Did not converge within {n_iter} iterations")
         
         return Vn, Un, Unfd, Unva, Umn, Umnfd
-        
 
 # endloop 

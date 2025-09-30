@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu May 22 10:27:47 2025
-
-@author: richa
+Validation checks
 """
 
 import pandas as pd

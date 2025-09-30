@@ -1,15 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Jul 23 12:55:00 2025
-
-@author: richa
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 30 13:36:45 2025
-
-@author: richa
+Supporting functions for aggregation
 """
 import pandas as pd
 
