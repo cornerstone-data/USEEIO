@@ -1,6 +1,6 @@
 Model,Version,Years,Alias,Modelspec,Excel,RDS,API,JSON,Status
-USEEIO v2.5.1-phoebe-23,2.5.1,2023,phoebe,pending,,,,,in draft
-USEEIO v2.5.1-waxwing-22,2.5.1,2022,waxwing,pending,pending,N,N,N,pending
+USEEIO v2.6.0-phoebe-23,2.6.0,2023,phoebe,pending,,,,,in draft
+USEEIO v2.5.1-waxwing-22,2.5.1,2022,waxwing,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-1-waxwing-model),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-1-waxwing-model),N,N,N,published
 USEEIO v2.5-kinglet-22,2.5,2022,kinglet,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
 USEEIO v2.5-kingbird-17,2.5,2017,kingbird,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
 USEEIO v2.5-kingbird-18,2.5,2018,kingbird,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
