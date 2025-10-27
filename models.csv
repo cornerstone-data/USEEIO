@@ -1,5 +1,5 @@
 Model,Version,Years,Alias,Modelspec,Excel,RDS,API,JSON,Status
-USEEIO v2.6.0-phoebe-23,2.6.0,2023,phoebe,pending,,,,,in draft
+USEEIO v2.6.0-phoebe-23,2.6.0,2023,phoebe,[supply-chain-factors github](https://github.com/cornerstone-data/supply-chain-factors/blob/v1.4.0/model-specs/USEEIOv2.6.0-phoebe-23.yml),pending,[Zenodo](https://zenodo.org/records/17202747/files/USEEIOv2.6.0-phoebe-23.rds?download=1),N,N,published
 USEEIO v2.5.1-waxwing-22,2.5.1,2022,waxwing,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-1-waxwing-model),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-1-waxwing-model),N,N,N,published
 USEEIO v2.5-kinglet-22,2.5,2022,kinglet,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
 USEEIO v2.5-kingbird-17,2.5,2017,kingbird,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
@@ -10,7 +10,7 @@ USEEIO v2.5-kingbird-21,2.5,2021,kingbird,[data.gov](https://catalog.data.gov/da
 USEEIO v2.5-kingbird-22,2.5,2022,kingbird,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
 USEEIO v2.5-catbird-22,2.5,2022,catbird,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
 USEEIO v2.5-oriole-22,2.5,2022,oriole,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
-StateEEIO v1.3-pecan-YY,1.3.0,2012-2023,pecan,,,,,,draft
+StateEEIO v1.3-pecan-YY,1.3.0,2012-2023,pecan,USEEIO-State,,USEEIO-State,N,N,published
 StateEEIO v1.2-milkbar-YY,1.2.0,2012-2020,milkbar,,,,,,internal
 StateEEIO v1.2-shoofly-YY,1.2.0,2012-2020,shoofly,,,,,,internal
 USEEIO v2.5-waxwing-22,2.5,2022,waxwing,[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),[data.gov](https://catalog.data.gov/dataset/useeio-v2-5-models),N,N,N,published
