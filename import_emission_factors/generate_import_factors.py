@@ -148,8 +148,12 @@ def generate_import_emission_factors(years: list, schema=2012, calc_tiva=False):
         ##       is unable to distinguish and sort out mismatches by detail/
         ##       summary sectors.
         multiplier_df = df_prepare(multiplier_df, year)
-        check = (multiplier_df
-                 .query('Flow == @multiplier_df["Flow"][0]')
+        check_df = multiplier_df.copy()
+        if 'Flow' in check_df.columns:
+            check_df = check_df.query('Flow == @check_df["Flow"][0]')
+        elif 'Flowable' in check_df.columns:
+            check_df = check_df.query('Flowable == @check_df["Flowable"][0]')
+        check = (check_df
                  .groupby(['BEA Summary']).agg({'cntry_cntrb_to_national_summary':'sum'})
                  .rename(columns={'cntry_cntrb_to_national_summary': 'contrib'})
                  .query('contrib > 0 and contrib <= 0.9999')
