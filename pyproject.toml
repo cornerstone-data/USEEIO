@@ -7,6 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
   "bibtexparser",
   "currencyconverter",
+  "esupy",
+  "fedelemflowlist",
   "numpy",
   "openpyxl",
   "pandas",
@@ -24,3 +26,7 @@ dev = [
 
 [tool.uv]
 exclude-newer = "1 week"
+
+[tool.uv.sources]
+fedelemflowlist = { git = "https://github.com/FLCAC-admin/fedelemflowlist", rev = "v1.3.1" }
+esupy = { git = "https://github.com/USEPA/esupy.git" }
