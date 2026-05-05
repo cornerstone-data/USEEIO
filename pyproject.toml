@@ -1,0 +1,26 @@
+[project]
+name = "useeio"
+version = "0.1.0"
+description = "Development environment metadata for USEEIO modeling scripts."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "bibtexparser",
+  "currencyconverter",
+  "numpy",
+  "openpyxl",
+  "pandas",
+  "pymrio",
+  "pyyaml",
+  "requests",
+  "tqdm",
+]
+
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.uv]
+exclude-newer = "1 week"
