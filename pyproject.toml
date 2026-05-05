@@ -1,7 +1,7 @@
 [project]
 name = "useeio"
 version = "0.1.0"
-description = "Development environment metadata for USEEIO modeling scripts."
+description = "United States Environmentally-Extended Input-Output (USEEIO) Modeling Framework."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
