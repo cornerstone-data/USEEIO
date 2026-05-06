@@ -64,7 +64,18 @@ The environmental flows fields are the same as those used for USEEIO which are f
 ## BEA API Access
 To make calls to BEA for service imports data (by BEA service category, country, and year), users must first register at https://apps.bea.gov/api/signup/.
 After doing so, users will be provided with an API key to the provided email.
-Store this as 'BEA_API_key.yaml' in the API subfolder of the import_emission_factors directory.
+
+Set the key as an environment variable before running scripts:
+
+- `BEA_API_KEY` (preferred)
+- `BEA_API_key` (backward compatible)
+
+Optional: use a local `.env` file in the repository root with:
+
+- `BEA_API_KEY=<your key>`
+- Install `python-dotenv` to auto-load `.env` values.
+
+Do not store API secrets in tracked files.
 
 ## Package requirements
 - pandas

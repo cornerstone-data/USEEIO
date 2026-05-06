@@ -7,6 +7,7 @@ import pickle as pkl
 import yaml
 import numpy as np
 import requests
+import os
 from pathlib import Path
 
 apiPath = Path(__file__).parent / 'API'
@@ -115,15 +116,38 @@ def create_Reqs(file, year):
     return reqs
 
 def get_api_key(file):
+    # Load .env values if python-dotenv is available.
     try:
-        with open(apiPath / f'{file}_key.yaml') as f:
-            api_key = yaml.safe_load(f)
-        return api_key
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            f'API key required for {file}. Create the file '
-            f'"../import_emission_factors/API/{file}_key.yaml" and add your '
-            f'API key')
+        from dotenv import load_dotenv  # type: ignore
+        for env_path in (
+            Path(__file__).parent / '.env',
+            Path(__file__).parents[1] / '.env',
+        ):
+            if env_path.exists():
+                load_dotenv(dotenv_path=env_path, override=False)
+    except ImportError:
+        pass
+
+    env_var_candidates = list(dict.fromkeys([
+        file,
+        f'{file}_KEY',
+        f'{file}_key',
+        file.upper(),
+        f'{file.upper()}_KEY',
+        f'{file.upper()}_key',
+        file.lower(),
+        f'{file.lower()}_key',
+    ]))
+
+    for env_var in env_var_candidates:
+        api_key = os.getenv(env_var)
+        if api_key and api_key.strip():
+            return api_key.strip()
+
+    raise EnvironmentError(
+        f'API key required for {file}. Set an environment variable '
+        f'(for example: {file}, {file}_KEY, or {file}_key).'
+    )
 
 
 def complete_URLs(req_url, year, d):

@@ -1,0 +1,32 @@
+[project]
+name = "useeio"
+version = "0.1.0"
+description = "United States Environmentally-Extended Input-Output (USEEIO) Modeling Framework."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "bibtexparser",
+  "currencyconverter",
+  "esupy",
+  "fedelemflowlist",
+  "numpy",
+  "openpyxl",
+  "pandas",
+  "pymrio",
+  "pyyaml",
+  "requests",
+  "tqdm",
+]
+
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.uv]
+exclude-newer = "1 week"
+
+[tool.uv.sources]
+fedelemflowlist = { git = "https://github.com/FLCAC-admin/fedelemflowlist", rev = "v1.3.1" }
+esupy = { git = "https://github.com/USEPA/esupy.git" }
